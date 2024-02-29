@@ -85,6 +85,16 @@
 			<limit lower="-3.14" upper="3.14" effort="100" velocity="0.5"/>
     </joint>
 
+    <transmission name="transmission1">
+      <type>transmission_interface/SimpleTransmission</type>
+      <joint name="shoulder_pan_joint">
+        <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+      </joint>
+      <actuator name="motor1">
+        <mechanicalReduction>1</mechanicalReduction>
+      </actuator>
+    </transmission>
+
     <link name="shoulder_link">
         <visual>
             <geometry>
@@ -112,6 +122,16 @@
       <dynamics damping="0.0" friction="0.0"/>
 			<limit lower="-3.14" upper="3.14" effort="100" velocity="0.5"/>
     </joint>
+
+    <transmission name="transmission2">
+      <type>transmission_interface/SimpleTransmission</type>
+      <joint name="shoulder_lift_joint">
+        <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+      </joint>
+      <actuator name="motor2">
+        <mechanicalReduction>1</mechanicalReduction>
+      </actuator>
+    </transmission>
 
     <link name="upper_arm_link">
         <visual>
@@ -141,6 +161,16 @@
 			<limit lower="-3.14" upper="3.14" effort="100" velocity="0.5"/>
     </joint>
 
+    <transmission name="transmission3">
+      <type>transmission_interface/SimpleTransmission</type>
+      <joint name="elbow_joint">
+        <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+      </joint>
+      <actuator name="motor3">
+        <mechanicalReduction>1</mechanicalReduction>
+      </actuator>
+    </transmission>
+
     <link name="forearm_link">
         <visual>
         <geometry>
@@ -168,6 +198,16 @@
       <dynamics damping="0.0" friction="0.0"/>
 			<limit lower="-3.14" upper="3.14" effort="100" velocity="0.5"/>
     </joint>
+
+    <transmission name="transmission4">
+      <type>transmission_interface/SimpleTransmission</type>
+      <joint name="wrist_1_joint">
+        <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+      </joint>
+      <actuator name="motor4">
+        <mechanicalReduction>1</mechanicalReduction>
+      </actuator>
+    </transmission>
 
     <link name="wrist_1_link">
       <visual>
@@ -198,6 +238,16 @@
 			<limit lower="-3.14" upper="3.14" effort="100" velocity="0.5"/>
     </joint>
 
+    <transmission name="transmission5">
+      <type>transmission_interface/SimpleTransmission</type>
+      <joint name="wrist_2_joint">
+        <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+      </joint>
+      <actuator name="motor5">
+        <mechanicalReduction>1</mechanicalReduction>
+      </actuator>
+    </transmission>
+
     <link name="wrist_2_link">
       <visual>
         <geometry>
@@ -226,6 +276,16 @@
       <dynamics damping="0.0" friction="0.0"/>
 			<limit lower="-3.14" upper="3.14" effort="100" velocity="0.5"/>
     </joint>
+
+    <transmission name="transmission6">
+      <type>transmission_interface/SimpleTransmission</type>
+      <joint name="wrist_3_joint">
+        <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+      </joint>
+      <actuator name="motor6">
+        <mechanicalReduction>1</mechanicalReduction>
+      </actuator>
+    </transmission>
 
     <link name="wrist_3_link">
       <visual>
@@ -269,30 +329,6 @@
       <child link="base_link"/>
     </joint>
 
-
-<xacro:macro name="ur5_arm_transmission" params="joint_name">
-     <transmission name="${joint_name}_trans">
-       <type>transmission_interface/SimpleTransmission</type>
-       <joint name="${joint_name}">
-        <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
-         <!-- <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface> -->
-       </joint>
-       <actuator name="${joint_name}_motor">
-         <mechanicalReduction>1</mechanicalReduction>
-       </actuator>
-     </transmission>
- </xacro:macro>
-
-
-
-  <xacro:ur5_arm_transmission joint_name="shoulder_pan_joint"/>
-  <xacro:ur5_arm_transmission joint_name="shoulder_lift_joint"/>
-  <xacro:ur5_arm_transmission joint_name="elbow_joint"/>
-  <xacro:ur5_arm_transmission joint_name="wrist_1_joint"/>
-  <xacro:ur5_arm_transmission joint_name="wrist_2_joint"/>
-  <xacro:ur5_arm_transmission joint_name="wrist_3_joint"/>
-
-  <!-- ros_control plugin -->
   <gazebo>
       <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
           <robotNamespace>/ur5_arm</robotNamespace>
