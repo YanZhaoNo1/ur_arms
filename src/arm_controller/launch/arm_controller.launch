@@ -1,0 +1,4 @@
+<launch>
+    <node name="arm_controller" pkg="arm_controller" type="arm_controller.py" output="screen">
+    </node>
+</launch>
