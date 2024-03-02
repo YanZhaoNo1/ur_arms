@@ -3,15 +3,15 @@
 
 import rospy
 import math
-from std_msgs.msg import Bool
+from std_srvs.srv import SetBool
 from std_msgs.msg import Float64
 
 class armControl:
     def __init__(self):
         rospy.init_node("arm_control_node")
     
-        self.start_subscrber = rospy.Subscriber(
-            "/mov_start", Bool, self.mov_start)
+        self.srv_nav_start = rospy.Service(
+            '/mov_start', SetBool, self.mov_start)
         self.arm_shoulder_pan_pub = rospy.Publisher(
             "/ur5_arm/shoulder_pan_joint_position_controller/command",Float64,queue_size=1000)
         
@@ -20,18 +20,25 @@ class armControl:
 
         self.arm_shoulder_pan_position.data = 3.14
     
-    def mov_start(self):
+    def mov_start(self, req):
         if not self.is_mov_start:
-            print("Action Stations!!!")
-            self.is_mov_start = True
-            return True
+            if req.data:
+                print("Action Stations!!!")
+                self.is_mov_start = True
+                return True, "Start move"
+            else:
+                print("Ignoring request as the \"data\" field is set to false")
+                return False, "False received"
         else:
-            print("Starting failed: already running")
-            return False
+            if req.data:
+                print("Starting failed: already running")
+                return False, "Already running"
+            else:
+                return False, "doing nothing" 
         
     def flow(self):
-        # if self.is_mov_start == True:
-        self.arm_shoulder_pan_pub.publish(self.arm_shoulder_pan_position)
+        if self.is_mov_start == True:
+            self.arm_shoulder_pan_pub.publish(self.arm_shoulder_pan_position)
     
     def run(self):
         rate = rospy.Rate(20)
