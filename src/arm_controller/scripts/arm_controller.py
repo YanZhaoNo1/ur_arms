@@ -1,15 +1,27 @@
 #! /usr/bin/env python3.8
 # -*- coding: utf-8 -*-
 
+import sys
+sys.path.append("..")
 import rospy
-import math
+from enum import Enum
 from std_srvs.srv import SetBool
 from std_msgs.msg import Float64
+from yolov5_ros_msgs import BoundingBoxes
+
+class ArmStage(Enum):
+    IDLE = 0
+    UpArm = 1
+    BendsArm = 2
+    StraightenArm = 3
+
 
 class armControl:
     def __init__(self):
         rospy.init_node("arm_control_node")
     
+        self.bboxes_sub = rospy.Subscriber(
+            "/yolov5/BoundingBoxes",BoundingBoxes,self.bboxesCallback)
         self.srv_nav_start = rospy.Service(
             '/mov_start', SetBool, self.mov_start)
         self.arm_shoulder_pan_pub = rospy.Publisher(
@@ -32,6 +44,7 @@ class armControl:
         self.wrist_2_position = Float64()
         self.wrist_3_position = Float64()
         self.is_mov_start = False
+        self.arm_stage = ArmStage.IDLE
 
         self.arm_shoulder_pan_position.data = rospy.get_param("~arm_shoulder_pan_position",3.14)
         self.shoulder_lift_position.data = rospy.get_param("~shoulder_lift_position",0.0)
@@ -55,15 +68,36 @@ class armControl:
                 return False, "Already running"
             else:
                 return False, "doing nothing" 
-        
+
+    def bboxesCallback(self,msg):
+        arm_status = msg.Class
+        if arm_status == 1:
+            self.arm_stage = ArmStage.BendsArm
+        elif arm_status == 2:
+            self.arm_stage = ArmStage.StraightenArm
+        elif arm_status == 3:
+            self.arm_stage = ArmStage.UpArm
+        else:
+            self.arm_stage = ArmStage.IDLE
+    
+
     def flow(self):
         if self.is_mov_start == True:
-            self.arm_shoulder_pan_pub.publish(self.arm_shoulder_pan_position)
-            self.shoulder_lift_pub.publish(self.shoulder_lift_position)
-            self.elbow_pub.publish(self.elbow_position)
-            self.wrist_1_pub.publish(self.wrist_1_position)
-            self.wrist_2_pub.publish(self.wrist_2_position)
-            self.wrist_3_pub.publish(self.wrist_3_position)
+            if self.arm_stage == ArmStage.BendsArm:
+                self.arm_shoulder_pan_pub.publish(self.arm_shoulder_pan_position)
+                self.shoulder_lift_pub.publish(self.shoulder_lift_position)
+                self.elbow_pub.publish(self.elbow_position)
+                self.wrist_1_pub.publish(self.wrist_1_position)
+                self.wrist_2_pub.publish(self.wrist_2_position)
+                self.wrist_3_pub.publish(self.wrist_3_position)
+                print("Now arm has been bended!")
+            if self.arm_stage == ArmStage.StraightenArm:
+                print("Now arm has been straightened!")
+            if self.arm_stage == ArmStage.UpArm:
+                print("Now arm has been up!")
+            if self.arm_stage == ArmStage.IDLE:
+                print("Nothing is done!")
+            
     
     def run(self):
         rate = rospy.Rate(20)
