@@ -1,13 +1,13 @@
 #! /usr/bin/env python3.8
 # -*- coding: utf-8 -*-
 
-import sys
-sys.path.append("..")
+# import sys
+# sys.path.append("/home/yan/WS/ur_arms/")
 import rospy
 from enum import Enum
 from std_srvs.srv import SetBool
 from std_msgs.msg import Float64
-from yolov5_ros_msgs import BoundingBoxes
+from yolov5_ros_msgs.msg import BoundingBoxes,BoundingBox
 
 class ArmStage(Enum):
     IDLE = 0
@@ -70,13 +70,34 @@ class armControl:
                 return False, "doing nothing" 
 
     def bboxesCallback(self,msg):
-        arm_status = msg.Class
-        if arm_status == 1:
+        arm_status_temp = msg.bounding_boxes[0]
+        arm_status = arm_status_temp.Class
+
+        print(arm_status)
+        if arm_status == 1: 
             self.arm_stage = ArmStage.BendsArm
+            self.arm_shoulder_pan_position.data = 0.0
+            self.shoulder_lift_position.data = 1.0
+            self.elbow_position.data = -1.57
+            self.wrist_1_position.data = 0.0
+            self.wrist_2_position.data = 0.0
+            self.wrist_3_position.data = 0.0
         elif arm_status == 2:
             self.arm_stage = ArmStage.StraightenArm
+            self.arm_shoulder_pan_position.data = 0.0
+            self.shoulder_lift_position.data = 0.8
+            self.elbow_position.data = 0.0
+            self.wrist_1_position.data = 0.0
+            self.wrist_2_position.data = 0.0
+            self.wrist_3_position.data = 0.0
         elif arm_status == 3:
             self.arm_stage = ArmStage.UpArm
+            self.arm_shoulder_pan_position.data = 0.0
+            self.shoulder_lift_position.data = 0.0
+            self.elbow_position.data = 0.0
+            self.wrist_1_position.data = 0.0
+            self.wrist_2_position.data = 0.0
+            self.wrist_3_position.data = 0.0
         else:
             self.arm_stage = ArmStage.IDLE
     
@@ -92,8 +113,20 @@ class armControl:
                 self.wrist_3_pub.publish(self.wrist_3_position)
                 print("Now arm has been bended!")
             if self.arm_stage == ArmStage.StraightenArm:
+                self.arm_shoulder_pan_pub.publish(self.arm_shoulder_pan_position)
+                self.shoulder_lift_pub.publish(self.shoulder_lift_position)
+                self.elbow_pub.publish(self.elbow_position)
+                self.wrist_1_pub.publish(self.wrist_1_position)
+                self.wrist_2_pub.publish(self.wrist_2_position)
+                self.wrist_3_pub.publish(self.wrist_3_position)
                 print("Now arm has been straightened!")
             if self.arm_stage == ArmStage.UpArm:
+                self.arm_shoulder_pan_pub.publish(self.arm_shoulder_pan_position)
+                self.shoulder_lift_pub.publish(self.shoulder_lift_position)
+                self.elbow_pub.publish(self.elbow_position)
+                self.wrist_1_pub.publish(self.wrist_1_position)
+                self.wrist_2_pub.publish(self.wrist_2_position)
+                self.wrist_3_pub.publish(self.wrist_3_position)
                 print("Now arm has been up!")
             if self.arm_stage == ArmStage.IDLE:
                 print("Nothing is done!")
