@@ -9,7 +9,7 @@ class FigureDetect():
 
     def __init__(self):
         self.pTime = 0
-        self.cap = cv2.VideoCapture(0)
+        self.cap = cv2.VideoCapture(1)
         self.mpHands = mp.solutions.hands
         self.hands = self.mpHands.Hands(min_detection_confidence=0.8, min_tracking_confidence=0.5)
         self.mpDraw = mp.solutions.drawing_utils
