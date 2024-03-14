@@ -5,7 +5,7 @@ import cv2
 import mediapipe as mp
 import time
 
-class FigureDetect():
+class SimpleAiKeyboard():
 
     def __init__(self):
         self.pTime = 0
@@ -26,6 +26,8 @@ class FigureDetect():
 
         while True:
             self.success, self.img = self.cap.read()
+            cv2.rectangle(self.img,(100,100),(200,200),(255,0,55),cv2.FILLED)
+            cv2.putText(self.img,"Q",(115,180),cv2.FONT_HERSHEY_PLAIN,5,(255,255,255))
             if self.success:
                 imgRGB = cv2.cvtColor(self.img, cv2.COLOR_BGR2RGB)
                 result = self.hands.process(imgRGB)
@@ -53,7 +55,7 @@ class FigureDetect():
             
 if __name__ == "__main__":
     try:
-        node = FigureDetect()
+        node = SimpleAiKeyboard()
         node.run()
 
     except KeyboardInterrupt:
